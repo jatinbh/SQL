@@ -1,0 +1,2 @@
+
+select substring('abc200xx300ff','[0-9]+');
