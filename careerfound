@@ -1,0 +1,29 @@
+
+
+CREATE TABLE students (
+
+        student_id INT PRIMARY key,
+        name	varchar(30),
+        start_date	date,
+        target_completion_date	date,
+        progress_percent	NUMERIC(5,2),	
+        test_variable	varchar(5)
+        
+);
+
+CREATE TABLE submissions (
+        
+        submission_id	INT PRIMARY key,
+        student_id	INT,
+        exercise_id	INT,
+        state	varchar(30),
+        approval_date	date,
+        time_spent	varchar(30),
+        average_answer_time_in_hours NUMERIC(6,2),
+        
+        FOREIGN KEY (student_id) REFERENCES students(student_id),
+        FOREIGN KEY (exercise_id) REFERENCES exercises(exercise_id)
+
+);
+
+
