@@ -1,7 +1,7 @@
-CREATE TABLE users_p3(
+CREATE TABLE users_3(
 
-	user_id	char(30)	PRIMARY KEY,
-	registration_date	date,
+	id	char(30)	PRIMARY KEY,
+	registration_date	timestamp,
 	bank_name	CHAR(70),
 	onboarded	INT,
 	vouchers_bought INT	,
