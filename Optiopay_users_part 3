@@ -1,0 +1,10 @@
+CREATE TABLE users_p3(
+
+	user_id	char(30)	PRIMARY KEY,
+	registration_date	date,
+	bank_name	CHAR(70),
+	onboarded	INT,
+	vouchers_bought INT	,
+	bank_connection_successful INT	
+	
+);
