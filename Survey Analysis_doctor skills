@@ -1,0 +1,38 @@
+with c1 as (
+select a.patient_id , q."type" , (1- sum(ao.central_estimate )) ps 
+from answers a left join questionnaires q on a.questionnaire_id = q.id 
+left join answer_options ao on ao.question_id =a.question_id and ao.answer = a.answer 
+where q.treatment= 'Hip' -- and a.patient_id = 9942
+group by 1, 2
+), c2 as 
+(
+select p.*, s.name 
+from patients p 
+left join surgeons s on p.surgeon_id= s.id -- where p.id = 9942
+), 
+c3 as (
+select *
+from c1 left join c2 on c1.patient_id= c2.id -- where c2.name= 'Mon Mothma'
+order by c1.patient_id, c1.type desc
+), 
+c4 as (
+select name, patient_id,
+case when type= 'pre' then ps end as pre,
+case when type= 'post' then ps end as post
+from c3
+), 
+c5 as (
+select name, patient_id, sum(coalesce(post, 0))-sum(coalesce(pre, 0)) diff 
+from c4
+group by 1, 2
+), 
+c6 as (
+select 
+name ,sum(case when diff<0 then 1 else 0 end) as neg,  
+sum(case when diff>0 then 1 else 0 end) as pos
+from c5 
+group by 1
+)
+select name, round((pos::decimal/(pos+neg)), 3), pos+neg total, pos, neg  
+from c6 
+order by 2 desc 
