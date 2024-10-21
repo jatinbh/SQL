@@ -1,0 +1,33 @@
+
+/*
+
+ad_id
+
+campaign_id
+
+campaign_name
+
+ad_impression_rank (rank of the ad within the campaign by impressions . E.g. if one campaign has 5 ads, they need to have values from 1 to 5 from the one with the most impressions to the one with the least).
+
+ad_clicks_rank (rank of the ad within the campaign by clicks).
+
+campaign_status (“active” if campaign date_ended is null, “not_active” otherwise)
+
+clicks
+
+impressions
+
+ctr (clicks  / impressions)
+
+
+*/
+Select ad_id, c.campaign_id, campaign_name
+-- rank and dense rank can be used
+, row_number() over(partition by c.campaign_id order by impressions desc) ad_impression_rank,
+row_number() over(partition by c.campaign_id order by clicks desc) ad_clicks_rank,
+case when date_ended is null then 'active' else 'not_active' end as campaign_status, clicks, impressions, round((clicks*100/impressions),2) ctr
+from campaigns c 
+left join google_ads_impressions i on c.campaign_id= i.campaign_id
+where c.campaign_name in ('Spring Sale 2024') 
+
+-- Create the "campaigns" table CREATE TABLE campaigns ( campaign_id INTEGER PRIMARY KEY, campaign_name TEXT NOT NULL, date_started DATE NOT NULL, date_ended DATE -- if null => campaign is active ); -- Create the "google_ads_impressions" table CREATE TABLE google_ads_impressions ( ad_id INTEGER PRIMARY KEY, campaign_id INTEGER NOT NULL, ad_status TEXT NOT NULL, clicks INTEGER NOT NULL, impressions INTEGER NOT NULL ); -- Insert data into the "campaigns" table INSERT INTO campaigns (campaign_id, campaign_name, date_started, date_ended) VALUES (1, 'Spring Sale 2024', '2024-02-24', NULL), (2, 'Easter Deals', '2024-03-09', '2024-03-16'), (3, 'April Showers Promo', '2024-03-04', NULL), (4, 'Mothers Day Special', '2024-03-24', '2024-03-31'), (5, 'Memorial Day Discount', '2024-03-14', NULL), (6, 'Summer Kickoff', '2024-02-28', '2024-03-06'), (7, 'Fitness Frenzy', '2024-02-23', NULL), (8, 'Back to School Savings', '2024-03-19', '2024-03-26'), (9, 'Labor Day Clearance', '2024-03-12', NULL), (10, 'Halloween Havoc', '2024-03-02', '2024-03-09'), (11, 'Thanksgiving Specials', '2024-02-25', NULL), (12, 'Winter Wonderland Deals', '2024-03-23', '2024-03-30'), (13, 'New Year New You Promos', '2024-03-08', NULL), (14, 'Valentines Day Vouchers', '2024-03-01', '2024-03-08'), (15, 'Spring Break Blowout', '2024-03-06', NULL), (16, 'Eco-Friendly Earth Day', '2024-03-17', '2024-03-24'), (17, 'Summer Solstice Sale', '2024-03-10', NULL), (18, 'Patriotic July 4th Deals', '2024-03-03', '2024-03-10'), (19, 'Dog Days Discounts', '2024-03-05', NULL), (20, 'Back to College Campaign', '2024-03-22', '2024-03-29'); -- Insert data into the "google_ads_impressions" table INSERT INTO google_ads_impressions (ad_id, campaign_id, ad_status, clicks, impressions) VALUES (1, 11, 'active', 299, 5958), (2, 12, 'not_active', 11, 4724), (3, 9, 'active', 178, 6220), (4, 17, 'not_active', 294, 6890), (5, 17, 'not_active', 157, 4495), (6, 9, 'active', 256, 369), (7, 20, 'not_active', 20, 2377), (8, 2, 'not_active', 289, 2460), (9, 11, 'not_active', 103, 62), (10, 17, 'not_active', 271, 4503), (11, 4, 'not_active', 170, 11230), (12, 5, 'not_active', 165, 5841), (13, 18, 'not_active', 29, 4970), (14, 7, 'active', 155, 6414), (15, 9, 'active', 199, 541), (16, 16, 'not_active', 172, 1587), (17, 1, 'active', 269, 3488), (18, 16, 'not_active', 179, 3329), (19, 17, 'active', 83, 8636), (20, 17, 'active', 283, 6476), (21, 18, 'not_active', 47, 5101), (22, 8, 'not_active', 46, 7081), (23, 5, 'active', 19, 6458), (24, 17, 'active', 175, 4773), (25, 19, 'not_active', 171, 761), (26, 18, 'not_active', 62, 933), (27, 2, 'not_active', 156, 5246), (28, 15, 'not_active', 65, 1044), (29, 3, 'not_active', 218, 5840), (30, 2, 'not_active', 166, 916), (31, 20, 'not_active', 286, 7277), (32, 8, 'not_active', 10, 2619), (33, 20, 'not_active', 193, 493), (34, 19, 'active', 94, 2494), (35, 13, 'not_active', 10, 1636), (36, 4, 'not_active', 297, 5099), (37, 6, 'not_active', 198, 2398), (38, 17, 'not_active', 69, 8935), (39, 20, 'not_active', 99, 6063), (40, 4, 'not_active', 211, 5138), (41, 4, 'not_active', 160, 3230), (42, 16, 'not_active', 197, 2035), (43, 17, 'active', 31, 2963), (44, 3, 'not_active', 134, 1179), (45, 8, 'not_active', 28, 2820), (46, 16, 'not_active', 196, 1033), (47, 5, 'active', 234, 6848), (48, 7, 'not_active', 30, 6201), (49, 8, 'not_active', 195, 4580), (50, 12, 'not_active', 217, 497), (51, 16, 'not_active', 135, 1588), (52, 4, 'not_active', 228, 1285), (53, 19, 'active', 141, 10321), (54, 4, 'not_active', 207, 4881), (55, 9, 'active', 110, 2482), (56, 1, 'active', 260, 1520), (57, 2, 'not_active', 289, 12597), (58, 13, 'active', 119, 3448), (59, 16, 'not_active', 58, 4712), (60, 12, 'not_active', 288, 690), (61, 8, 'not_active', 247, 9073), (62, 4, 'not_active', 205, 4677), (63, 11, 'active', 273, 7629), (64, 11, 'not_active', 75, 298), (65, 12, 'not_active', 296, 1843), (66, 9, 'active', 299, 790), (67, 19, 'active', 135, 4436), (68, 15, 'not_active', 284, 3263), (69, 1, 'active', 204, 2215), (70, 6, 'not_active', 294, 6257), (71, 6, 'not_active', 156, 10808), (72, 10, 'not_active', 193, 785), (73, 19, 'active', 98, 1639), (74, 3, 'active', 218, 6152), (75, 7, 'not_active', 47, 514), (76, 19, 'active', 268, 1801), (77, 3, 'active', 34, 1265), (78, 18, 'not_active', 62, 501), (79, 1, 'active', 292, 495), (80, 6, 'not_active', 100, 718), (81, 2, 'not_active', 137, 5880), (82, 15, 'not_active', 47, 2869), (83, 6, 'not_active', 94, 2610), (84, 16, 'not_active', 217, 1291), (85, 7, 'active', 39, 1376), (86, 2, 'not_active', 284, 5552), (87, 10, 'not_active', 12, 5298), (88, 4, 'not_active', 125, 4614), (89, 4, 'not_active', 15, 6530), (90, 20, 'not_active', 51, 1360), (91, 17, 'active', 254, 484), (92, 19, 'active', 65, 1058), (93, 7, 'active', 58, 7829), (94, 16, 'not_active', 64, 3921), (95, 6, 'not_active', 221, 3710), (96, 11, 'active', 185, 4970), (97, 10, 'not_active', 186, 1606), (98, 10, 'not_active', 66, 8985), (99, 18, 'not_active', 200, 660), (100, 12, 'not_active', 161, 2307);
